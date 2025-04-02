@@ -718,6 +718,20 @@
 	</div>
 	<!--main-page-wrapper end-->
 
+	<!-- Toast notification -->
+	<div id="toast" class="toast-notification">
+		<div class="toast-content">
+			<div id="toast-icon" class="toast-icon">
+				<i class="bi bi-check-circle-fill"></i>
+			</div>
+			<div class="toast-message">
+				<span id="toast-text">Mensaje enviado con éxito</span>
+			</div>
+			<button class="toast-close" onclick="closeToast()">
+				<i class="bi bi-x"></i>
+			</button>
+		</div>
+	</div>
 
 	<!-- JS here -->
 
@@ -740,13 +754,96 @@
 	<!--Custom JS here -->
 	<script src="assets/js/main.js"></script>
 
+	<!-- Confetti JS -->
+	<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
 	<!-- EmailJS -->
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 	<script type="text/javascript">
 		(function() {
 			// https://dashboard.emailjs.com/admin/account
 			emailjs.init('2qnl275lOMpBYelkp');
+			
+			// Asegurarse de que el toast está oculto inicialmente
+			document.addEventListener('DOMContentLoaded', function() {
+				const toast = document.getElementById('toast');
+				if (toast) {
+					toast.classList.remove('show');
+				}
+			});
 		})();
+
+		function showToast(message, success = true) {
+			const toast = document.getElementById('toast');
+			const toastText = document.getElementById('toast-text');
+			const toastIcon = document.getElementById('toast-icon');
+			
+			// Asegurarse de que el toast está oculto antes de modificarlo
+			toast.classList.remove('show');
+			
+			// Pequeño retraso para asegurar que la clase 'show' se aplique correctamente
+			setTimeout(function() {
+				toastText.textContent = message;
+				
+				if (success) {
+					toastIcon.innerHTML = '<i class="bi bi-check-circle-fill"></i>';
+					toast.classList.remove('error');
+					toast.classList.add('success');
+				} else {
+					toastIcon.innerHTML = '<i class="bi bi-x-circle-fill"></i>';
+					toast.classList.remove('success');
+					toast.classList.add('error');
+				}
+				
+				toast.classList.add('show');
+				
+				// Ocultar después de 5 segundos
+				setTimeout(function() {
+					closeToast();
+				}, 5000);
+			}, 10);
+		}
+		
+		function closeToast() {
+			const toast = document.getElementById('toast');
+			if (toast) {
+				toast.classList.remove('show');
+			}
+		}
+
+		function triggerConfetti() {
+			const duration = 3000;
+			const animationEnd = Date.now() + duration;
+			const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+			function randomInRange(min, max) {
+				return Math.random() * (max - min) + min;
+			}
+
+			const interval = setInterval(function() {
+				const timeLeft = animationEnd - Date.now();
+
+				if (timeLeft <= 0) {
+					return clearInterval(interval);
+				}
+
+				const particleCount = 50 * (timeLeft / duration);
+				
+				// Confeti desde el centro superior
+				confetti(Object.assign({}, defaults, {
+					particleCount,
+					origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+					colors: ['#8c42f7', '#913BFF', '#7833cc', '#a64dff', '#5e29a6']
+				}));
+				
+				// Confeti desde el centro superior
+				confetti(Object.assign({}, defaults, {
+					particleCount,
+					origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+					colors: ['#8c42f7', '#913BFF', '#7833cc', '#a64dff', '#5e29a6']
+				}));
+			}, 250);
+		}
 
 		function sendEmail() {
 			// Obtener los valores del formulario
@@ -756,7 +853,7 @@
 
 			// Validar que los campos no estén vacíos
 			if (!name || !email || !message) {
-				alert('Por favor, completa todos los campos');
+				showToast('Por favor, completa todos los campos', false);
 				return;
 			}
 
@@ -776,18 +873,102 @@
 			emailjs.send('service_igigdac', 'template_yumg82m', templateParams)
 				.then(function(response) {
 					console.log('SUCCESS!', response.status, response.text);
-					alert('¡Mensaje enviado con éxito!');
+					showToast('¡Mensaje enviado con éxito!', true);
+					triggerConfetti(); // Lanzar la animación de confeti
 					document.getElementById('contactForm').reset();
 					document.querySelector('.submit-btn').textContent = 'Enviar mensaje';
 					document.querySelector('.submit-btn').disabled = false;
 				}, function(error) {
 					console.log('FAILED...', error);
-					alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.');
+					showToast('Error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.', false);
 					document.querySelector('.submit-btn').textContent = 'Enviar mensaje';
 					document.querySelector('.submit-btn').disabled = false;
 				});
 		}
 	</script>
+
+	<style>
+		/* Toast notification */
+		.toast-notification {
+			position: fixed;
+			bottom: 30px;
+			left: 50%;
+			transform: translateX(-50%) translateY(100px);
+			z-index: 9999;
+			background-color: white;
+			border-radius: 8px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+			overflow: hidden;
+			opacity: 0;
+			visibility: hidden;
+			transition: all 0.3s ease-in-out;
+			max-width: 350px;
+			border-left: 5px solid #8c42f7;
+			display: none; /* Ocultar inicialmente */
+		}
+
+		.toast-notification.show {
+			transform: translateX(-50%) translateY(0);
+			opacity: 1;
+			visibility: visible;
+			display: block; /* Mostrar cuando tenga la clase show */
+		}
+
+		.toast-notification.success {
+			border-left-color: #fd7e14;
+		}
+
+		.toast-notification.error {
+			border-left-color: #ff3860;
+		}
+
+		.toast-content {
+			display: flex;
+			align-items: center;
+			padding: 16px;
+		}
+
+		.toast-icon {
+			margin-right: 12px;
+			font-size: 24px;
+		}
+
+		.toast-notification.success .toast-icon {
+			color: #fd7e14;
+		}
+
+		.toast-notification.error .toast-icon {
+			color: #ff3860;
+		}
+
+		.toast-message {
+			flex: 1;
+			font-size: 14px;
+			font-weight: 500;
+			font-family: 'General Sans', sans-serif;
+		}
+
+		.toast-close {
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-size: 16px;
+			color: #888;
+			margin-left: 10px;
+			padding: 0;
+		}
+
+		.toast-close:hover {
+			color: #333;
+		}
+
+		@media (max-width: 576px) {
+			.toast-notification {
+				width: calc(100% - 40px);
+				max-width: none;
+			}
+		}
+	</style>
 
 </body>
 
