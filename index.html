@@ -302,7 +302,7 @@
 						</p>
 						<p>
 							<i class="fal fa-envelope-open"></i>
-							hashtag.desarrollos@gmail.com
+							desarrollos.hashtag@gmail.com
 						</p>
 					</div>
 				</div>
@@ -507,7 +507,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/ab-d.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a target="_blank" href="#contacto">Pagina Web para desarrolladora "AB Desarrollos"</a></h2>
 
 									<a target="_blank" href="https://desarrollosab.netlify.app/" class="icon-link"><img
@@ -520,7 +520,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/dm.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a target="_blank" href="https://dm-materiales.netlify.app/">Pagina web para corralon de materiales "Don Mauricio"</a></h2>
 
 									<a href="https://dm-materiales.netlify.app/" target="_blank" class="icon-link"><img src="assets/img/icon/arrow-13.svg"
@@ -533,7 +533,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/homever.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a>Proximamente...</a></h2>
 								</div>
 							</div>
@@ -543,7 +543,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/ab-d.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a target="_blank" href="#contacto">Pagina Web para desarrolladora "AB Desarrollos"</a></h2>
 
 									<a target="_blank" href="https://desarrollosab.netlify.app/" class="icon-link"><img
@@ -556,7 +556,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/dm.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a target="_blank" href="https://dm-materiales.netlify.app/">Pagina web para corralon de materiales "Don Mauricio"</a></h2>
 
 									<a href="https://dm-materiales.netlify.app/" target="_blank" class="icon-link"><img src="assets/img/icon/arrow-13.svg"
@@ -569,7 +569,7 @@
 								<div class="portfolio-thumb">
 									<img src="assets/img/gallery/homever.png" alt="portfolio">
 								</div>
-								<div class="content">
+								<div class="content d-none d-md-block">
 									<h2 class="pf-title"><a>Proximamente...</a></h2>
 								</div>
 							</div>
@@ -593,20 +593,20 @@
 										<h2 class="title">Envíanos un mensaje
 											para cualquier consulta</h2>
 									</div>
-									<form class="contact-form form-2" action="#">
+									<form class="contact-form form-2" id="contactForm">
 										<div class="input-wrapper">
-											<input type="text" placeholder="Nombre">
+											<input type="text" id="name" name="name" placeholder="Nombre" required>
 										</div>
 										<div class="input-wrapper">
-											<input type="email" placeholder="Email">
+											<input type="email" id="email" name="email" placeholder="Email" required>
 										</div>
 										<div class="col-12">
 											<div class="input-wrapper message">
-												<textarea name="message" placeholder="Tu Mensaje"></textarea>
+												<textarea id="message" name="message" placeholder="Tu Mensaje" required></textarea>
 											</div>
 										</div>
 										<div class="col-12">
-											<button type="submit" class="submit-btn w-100">Enviar mensaje</button>
+											<button type="button" onclick="sendEmail()" class="submit-btn w-100">Enviar mensaje</button>
 										</div>
 									</form>
 								</div>
@@ -740,6 +740,54 @@
 	<!--Custom JS here -->
 	<script src="assets/js/main.js"></script>
 
+	<!-- EmailJS -->
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+	<script type="text/javascript">
+		(function() {
+			// https://dashboard.emailjs.com/admin/account
+			emailjs.init('2qnl275lOMpBYelkp');
+		})();
+
+		function sendEmail() {
+			// Obtener los valores del formulario
+			var name = document.getElementById('name').value;
+			var email = document.getElementById('email').value;
+			var message = document.getElementById('message').value;
+
+			// Validar que los campos no estén vacíos
+			if (!name || !email || !message) {
+				alert('Por favor, completa todos los campos');
+				return;
+			}
+
+			// Mostrar indicador de carga
+			document.querySelector('.submit-btn').textContent = 'Enviando...';
+			document.querySelector('.submit-btn').disabled = true;
+
+			// Preparar los datos del formulario
+			var templateParams = {
+				from_name: name,
+				from_email: email,
+				message: message,
+				to_email: 'desarrollos.hashtag@gmail.com'
+			};
+
+			// Enviar el correo usando EmailJS
+			emailjs.send('service_igigdac', 'template_yumg82m', templateParams)
+				.then(function(response) {
+					console.log('SUCCESS!', response.status, response.text);
+					alert('¡Mensaje enviado con éxito!');
+					document.getElementById('contactForm').reset();
+					document.querySelector('.submit-btn').textContent = 'Enviar mensaje';
+					document.querySelector('.submit-btn').disabled = false;
+				}, function(error) {
+					console.log('FAILED...', error);
+					alert('Error al enviar el mensaje. Por favor, inténtalo de nuevo más tarde.');
+					document.querySelector('.submit-btn').textContent = 'Enviar mensaje';
+					document.querySelector('.submit-btn').disabled = false;
+				});
+		}
+	</script>
 
 </body>
 
