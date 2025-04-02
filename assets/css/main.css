@@ -9121,6 +9121,7 @@ form.comment-form {
   border-radius: 20px;
   position: relative;
   z-index: 1;
+  border: solid black 2px;
 }
 .portfolio-wrap-4 .portfolio-thumb::before {
   content: "";
@@ -9132,6 +9133,11 @@ form.comment-form {
   height: 100%;
   border-radius: 20px;
   background: linear-gradient(180deg, rgba(14, 0, 0, 0) 54.44%, rgba(7, 0, 0, 0.61) 72.81%, #000 100%);
+}
+@media only screen and (max-width: 767.98px) {
+  .portfolio-wrap-4 .portfolio-thumb::before {
+    background: none;
+  }
 }
 .portfolio-wrap-4 .portfolio-thumb img {
   width: 100%;
